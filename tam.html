@@ -1,0 +1,44 @@
+<!-- tam.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tam - AsieExpress</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      height: 100vh;
+      background: linear-gradient(135deg, #ffb347, #ffcc33, #ff7f50, #ff6f61);
+      background-size: 400% 400%;
+      animation: gradientMove 12s ease infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .content {
+      text-align: center;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 3rem;
+      border-radius: 20px;
+      max-width: 700px;
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <h1>Espace Tam</h1>
+    <p>Bienvenue dans la section de gestion des disponibilités. Ici, tu peux entrer et suivre ton planning chaque semaine.</p>
+  </div>
+</body>
+</html>

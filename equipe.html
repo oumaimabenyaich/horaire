@@ -1,0 +1,250 @@
+<!-- equipe.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>L’Équipe - AsieExpress</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ffb347, #ffcc33, #ff7f50, #ff6f61);
+      background-size: 400% 400%;
+      animation: gradientMove 12s ease infinite;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      max-width: 1200px;
+      width: 95%;
+      background: rgba(255, 255, 255, 0.88);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: #222;
+      margin-bottom: 2rem;
+    }
+
+    .input-section {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .input-section input {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      width: 250px;
+    }
+
+    .week-nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .week-nav button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      background: #333;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .jours {
+      display: flex;
+      gap: 1rem;
+      width: 100%;
+      justify-content: center;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+    }
+
+    .jour {
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 12px;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      width: 180px;
+      flex-shrink: 0;
+    }
+
+    .jour h3 {
+      margin-top: 0;
+      font-size: 1.1rem;
+    }
+
+    select {
+      width: 100%;
+      padding: 0.4rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-bottom: 0.5rem;
+    }
+
+    .statut {
+      display: block;
+      padding: 0.4rem;
+      text-align: center;
+      font-weight: bold;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      background: #ffe58a;
+      color: #664d03;
+    }
+
+    .submit {
+      margin-top: 4rem;
+      display: block;
+      width: 100%;
+      padding: 1rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      background-color: #333;
+      color: white;
+      cursor: pointer;
+    }
+
+    .submit:hover {
+      background-color: #111;
+    }
+
+    .total {
+      margin-top: 3rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Mes disponibilités</h1>
+
+    <div class="input-section">
+      <input type="text" id="prenom" placeholder="Entrez votre prénom...">
+    </div>
+
+    <div class="week-nav">
+      <button onclick="changerSemaine(-1)">&larr;</button>
+      <div id="weekLabel">Semaine du ...</div>
+      <button onclick="changerSemaine(1)">&rarr;</button>
+    </div>
+
+    <div class="jours" id="joursContainer">
+      <!-- Les jours seront générés dynamiquement -->
+    </div>
+
+    <div class="total" id="totalHeures">Total entré : 0.00 h</div>
+
+    <button class="submit" onclick="envoyerDonnees()">Envoyer mes disponibilités</button>
+  </div>
+
+  <script>
+    const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
+    const heures = Array.from({length: 15}, (_, i) => {
+      const h = 10 + Math.floor(i * 0.25);
+      const m = (i % 4) * 15;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    });
+
+    let semaineOffset = 0;
+    let donnees = {};
+
+    function genererJours() {
+      const container = document.getElementById("joursContainer");
+      container.innerHTML = "";
+      const prenom = document.getElementById("prenom").value.trim();
+
+      jours.forEach(jour => {
+        const bloc = document.createElement("div");
+        bloc.className = "jour";
+
+        const titre = document.createElement("h3");
+        titre.textContent = jour;
+
+        const debut = document.createElement("select");
+        const fin = document.createElement("select");
+
+        heures.forEach(h => {
+          debut.innerHTML += `<option value="${h}">${h}</option>`;
+          fin.innerHTML += `<option value="${h}">${h}</option>`;
+        });
+
+        debut.addEventListener("change", calculerHeures);
+        fin.addEventListener("change", calculerHeures);
+
+        const statut = document.createElement("div");
+        statut.className = "statut";
+        statut.textContent = "En attente";
+
+        bloc.appendChild(titre);
+        bloc.appendChild(debut);
+        bloc.appendChild(fin);
+        bloc.appendChild(statut);
+
+        container.appendChild(bloc);
+      });
+    }
+
+    function changerSemaine(direction) {
+      semaineOffset += direction;
+      const today = new Date();
+      const lundi = new Date(today.setDate(today.getDate() - today.getDay() + 1 + semaineOffset * 7));
+      const vendredi = new Date(lundi);
+      vendredi.setDate(lundi.getDate() + 4);
+      const options = { day: 'numeric', month: 'long' };
+      document.getElementById("weekLabel").textContent = `Semaine du ${lundi.toLocaleDateString('fr-FR', options)} au ${vendredi.toLocaleDateString('fr-FR', options)}`;
+    }
+
+    function calculerHeures() {
+      let total = 0;
+      const blocs = document.querySelectorAll(".jour");
+      blocs.forEach(bloc => {
+        const selects = bloc.querySelectorAll("select");
+        const debut = selects[0].value;
+        const fin = selects[1].value;
+
+        if (debut !== fin && heures.indexOf(fin) > heures.indexOf(debut)) {
+          const diff = heures.indexOf(fin) - heures.indexOf(debut);
+          total += diff * 0.25;
+        }
+      });
+      document.getElementById("totalHeures").textContent = `Total entré : ${total.toFixed(2)} h`;
+    }
+
+
+    function envoyerDonnees() {
+      alert("Fonction d'enregistrement à connecter plus tard");
+    }
+
+    window.onload = () => {
+      changerSemaine(0);
+      genererJours();
+    };
+  </script>
+</body>
+</html>
