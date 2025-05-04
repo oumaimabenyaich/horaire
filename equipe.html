@@ -76,20 +76,21 @@
     }
 
     .jours {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 1rem;
       width: 100%;
-      justify-content: center;
-      flex-wrap: wrap;
+      justify-items: center;
     }
 
-    .jour {
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 12px;
-      padding: 1rem;
-      border: 1px solid #ddd;
-      width: 180px;
+    .jours {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr); /* 5 jours fixes */
+      gap: 1rem;
+      width: 100%;
+      justify-items: center;
     }
+
 
     .jour h3 {
       margin-top: 0;
@@ -139,10 +140,11 @@
     }
 
     @media (max-width: 600px) {
-      .jour {
-        width: 100%;
+      .jours {
+        grid-template-columns: 1fr;
       }
     }
+
   </style>
 </head>
 <body>
