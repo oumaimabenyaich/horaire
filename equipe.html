@@ -13,7 +13,7 @@
       background: linear-gradient(135deg, #ffb347, #ffcc33, #ff7f50, #ff6f61);
       background-size: 400% 400%;
       animation: gradientMove 12s ease infinite;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
     }
@@ -25,7 +25,7 @@
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1100px;
       width: 95%;
       background: rgba(255, 255, 255, 0.88);
       padding: 2rem;
@@ -34,7 +34,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 2rem;
+      margin: 2rem auto;
     }
 
     h1 {
@@ -62,6 +62,7 @@
       align-items: center;
       gap: 2rem;
       margin-bottom: 2rem;
+      flex-wrap: wrap;
     }
 
     .week-nav button {
@@ -79,8 +80,7 @@
       gap: 1rem;
       width: 100%;
       justify-content: center;
-      flex-wrap: nowrap;
-      overflow-x: auto;
+      flex-wrap: wrap;
     }
 
     .jour {
@@ -89,7 +89,6 @@
       padding: 1rem;
       border: 1px solid #ddd;
       width: 180px;
-      flex-shrink: 0;
     }
 
     .jour h3 {
@@ -117,7 +116,7 @@
     }
 
     .submit {
-      margin-top: 4rem;
+      margin-top: 3rem;
       display: block;
       width: 100%;
       padding: 1rem;
@@ -135,8 +134,14 @@
     }
 
     .total {
-      margin-top: 3rem;
+      margin-top: 2rem;
       font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      .jour {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -154,9 +159,7 @@
       <button onclick="changerSemaine(1)">&rarr;</button>
     </div>
 
-    <div class="jours" id="joursContainer">
-      <!-- Les jours seront générés dynamiquement -->
-    </div>
+    <div class="jours" id="joursContainer"></div>
 
     <div class="total" id="totalHeures">Total entré : 0.00 h</div>
 
@@ -165,19 +168,24 @@
 
   <script>
     const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
-    const heures = Array.from({length: 15}, (_, i) => {
+    const heures = ["--", ...Array.from({length: 15}, (_, i) => {
       const h = 10 + Math.floor(i * 0.25);
       const m = (i % 4) * 15;
       return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-    });
+    })];
 
     let semaineOffset = 0;
-    let donnees = {};
+    let donnees = {}; // sauvegarde les choix par semaine et prénom
 
     function genererJours() {
       const container = document.getElementById("joursContainer");
       container.innerHTML = "";
       const prenom = document.getElementById("prenom").value.trim();
+      if (!prenom) return;
+
+      const semaineKey = getSemaineKey();
+      donnees[prenom] = donnees[prenom] || {};
+      donnees[prenom][semaineKey] = donnees[prenom][semaineKey] || {};
 
       jours.forEach(jour => {
         const bloc = document.createElement("div");
@@ -194,8 +202,28 @@
           fin.innerHTML += `<option value="${h}">${h}</option>`;
         });
 
-        debut.addEventListener("change", calculerHeures);
-        fin.addEventListener("change", calculerHeures);
+        const saved = donnees[prenom][semaineKey][jour] || {debut: "--", fin: "--"};
+        debut.value = saved.debut;
+        fin.value = saved.fin;
+
+        debut.selectedIndex = heures.indexOf(saved.debut || "--");
+        fin.selectedIndex = heures.indexOf(saved.fin || "--");
+
+        debut.addEventListener("change", () => {
+          donnees[prenom][semaineKey][jour] = {
+            debut: debut.value,
+            fin: fin.value
+          };
+          calculerHeures();
+        });
+
+        fin.addEventListener("change", () => {
+          donnees[prenom][semaineKey][jour] = {
+            debut: debut.value,
+            fin: fin.value
+          };
+          calculerHeures();
+        });
 
         const statut = document.createElement("div");
         statut.className = "statut";
@@ -208,6 +236,8 @@
 
         container.appendChild(bloc);
       });
+
+      calculerHeures();
     }
 
     function changerSemaine(direction) {
@@ -218,33 +248,40 @@
       vendredi.setDate(lundi.getDate() + 4);
       const options = { day: 'numeric', month: 'long' };
       document.getElementById("weekLabel").textContent = `Semaine du ${lundi.toLocaleDateString('fr-FR', options)} au ${vendredi.toLocaleDateString('fr-FR', options)}`;
+
+      if (document.getElementById("prenom").value.trim()) genererJours();
+    }
+
+    function getSemaineKey() {
+      const date = new Date();
+      const lundi = new Date(date.setDate(date.getDate() - date.getDay() + 1 + semaineOffset * 7));
+      return lundi.toISOString().split('T')[0];
     }
 
     function calculerHeures() {
       let total = 0;
-      const blocs = document.querySelectorAll(".jour");
-      blocs.forEach(bloc => {
-        const selects = bloc.querySelectorAll("select");
-        const debut = selects[0].value;
-        const fin = selects[1].value;
+      const prenom = document.getElementById("prenom").value.trim();
+      if (!prenom) return;
 
-        if (debut !== fin && heures.indexOf(fin) > heures.indexOf(debut)) {
-          const diff = heures.indexOf(fin) - heures.indexOf(debut);
-          total += diff * 0.25;
+      const semaineKey = getSemaineKey();
+      const donneesSemaine = donnees[prenom]?.[semaineKey] || {};
+
+      jours.forEach(jour => {
+        const data = donneesSemaine[jour];
+        if (data && data.debut !== "--" && data.fin !== "--" && heures.indexOf(data.fin) > heures.indexOf(data.debut)) {
+          total += (heures.indexOf(data.fin) - heures.indexOf(data.debut)) * 0.25;
         }
       });
+
       document.getElementById("totalHeures").textContent = `Total entré : ${total.toFixed(2)} h`;
     }
-
 
     function envoyerDonnees() {
       alert("Fonction d'enregistrement à connecter plus tard");
     }
 
-    window.onload = () => {
-      changerSemaine(0);
-      genererJours();
-    };
+    document.getElementById("prenom").addEventListener("input", genererJours);
+    window.onload = () => changerSemaine(0);
   </script>
 </body>
 </html>
