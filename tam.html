@@ -1,44 +1,173 @@
-<!-- tam.html -->
+<!-- tam.html (admin) -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tam - AsieExpress</title>
+  <title>Espace Tam - Administration</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
-      height: 100vh;
-      background: linear-gradient(135deg, #ffb347, #ffcc33, #ff7f50, #ff6f61);
-      background-size: 400% 400%;
-      animation: gradientMove 12s ease infinite;
+      background: linear-gradient(to right, #ff9966, #ff5e62);
+      min-height: 100vh;
+      padding: 2rem;
       display: flex;
-      align-items: center;
       justify-content: center;
-      color: #fff;
     }
 
-    @keyframes gradientMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .content {
-      text-align: center;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 3rem;
+    .container {
+      max-width: 1400px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.92);
       border-radius: 20px;
-      max-width: 700px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      padding: 2rem;
     }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    th {
+      background: #ff7e5f;
+      color: white;
+    }
+
+    .controls {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+
+    select {
+      padding: 0.4rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .valide { background: #d4edda; color: #155724; }
+    .refuse { background: #f8d7da; color: #721c24; }
+    .attente { background: #fff3cd; color: #856404; }
+
+    .btn-valider, .btn-refuser {
+      padding: 0.3rem 0.7rem;
+      font-size: 0.9rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn-valider { background: #28a745; color: white; }
+    .btn-refuser { background: #dc3545; color: white; }
   </style>
 </head>
 <body>
-  <div class="content">
-    <h1>Espace Tam</h1>
-    <p>Bienvenue dans la section de gestion des disponibilités. Ici, tu peux entrer et suivre ton planning chaque semaine.</p>
+  <div class="container">
+    <h1>Vue Admin - Disponibilités</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Prénom</th>
+          <th>Lundi</th>
+          <th>Mardi</th>
+          <th>Mercredi</th>
+          <th>Jeudi</th>
+          <th>Vendredi</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="adminTable">
+        <!-- Remplir dynamiquement -->
+      </tbody>
+    </table>
   </div>
+  <script>
+    const utilisateurs = [
+      {
+        prenom: "Oumaima",
+        semaine: {
+          Lundi: { debut: "10:00", fin: "13:30", statut: "en attente" },
+          Mardi: { debut: "--", fin: "--", statut: "en attente" },
+          Mercredi: { debut: "10:15", fin: "12:15", statut: "valide" },
+          Jeudi: { debut: "--", fin: "--", statut: "en attente" },
+          Vendredi: { debut: "10:00", fin: "13:00", statut: "refuse" },
+        }
+      }
+    ];
+
+    function genererTable() {
+      const tbody = document.getElementById("adminTable");
+      tbody.innerHTML = "";
+
+      utilisateurs.forEach(user => {
+        const row = document.createElement("tr");
+
+        const tdNom = document.createElement("td");
+        tdNom.textContent = user.prenom;
+        row.appendChild(tdNom);
+
+        let totalMin = 0;
+
+        ["Lundi","Mardi","Mercredi","Jeudi","Vendredi"].forEach(jour => {
+          const cell = document.createElement("td");
+          const data = user.semaine[jour];
+
+          if (data.debut !== "--" && data.fin !== "--") {
+            const [h1, m1] = data.debut.split(":").map(Number);
+            const [h2, m2] = data.fin.split(":").map(Number);
+            const diff = h2 * 60 + m2 - (h1 * 60 + m1);
+            if (diff > 0 && data.statut === "valide") totalMin += diff;
+          }
+
+          const selectDebut = `<select>${genererOptions(data.debut)}</select>`;
+          const selectFin = `<select>${genererOptions(data.fin)}</select>`;
+
+          cell.innerHTML = `
+            ${selectDebut}<br>${selectFin}
+            <div class="statut ${data.statut.replace(" ", "-")}">${data.statut}</div>
+            <div class="controls">
+              <button class="btn-valider">Valider</button>
+              <button class="btn-refuser">Refuser</button>
+            </div>
+          `;
+
+          row.appendChild(cell);
+        });
+
+        const tdTotal = document.createElement("td");
+        tdTotal.innerHTML = `${Math.floor(totalMin/60)}h${String(totalMin%60).padStart(2,'0')}min`;
+        row.appendChild(tdTotal);
+
+        tbody.appendChild(row);
+      });
+    }
+
+    function genererOptions(selected) {
+      const heures = ["--"];
+      for (let h = 10; h <= 13; h++) {
+        for (let m = 0; m < 60; m += 15) {
+          const val = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+          heures.push(val);
+        }
+      }
+      return heures.map(h => `<option ${h === selected ? "selected" : ""}>${h}</option>`).join("");
+    }
+
+    window.onload = genererTable;
+  </script>
 </body>
 </html>
