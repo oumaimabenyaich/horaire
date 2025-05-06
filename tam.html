@@ -1,173 +1,267 @@
-<!-- tam.html (admin) -->
+<!-- tam.html -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Espace Tam - Administration</title>
+  <title>Admin Tam - AsieExpress</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body {
+    html, body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(to right, #ff9966, #ff5e62);
+      background: linear-gradient(135deg, #ffb347, #ffcc33, #ff7f50, #ff6f61);
+      background-size: 400% 400%;
+      animation: gradientMove 12s ease infinite;
       min-height: 100vh;
-      padding: 2rem;
       display: flex;
       justify-content: center;
     }
 
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
     .container {
-      max-width: 1400px;
-      width: 100%;
-      background: rgba(255, 255, 255, 0.92);
+      max-width: 1300px;
+      width: 95%;
+      background: rgba(255, 255, 255, 0.88);
+      padding: 2rem;
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      padding: 2rem;
+      margin: 2rem auto;
     }
 
     h1 {
       text-align: center;
+      color: #222;
       margin-bottom: 2rem;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th, td {
-      border: 1px solid #ccc;
-      padding: 1rem;
-      text-align: center;
-    }
-
-    th {
-      background: #ff7e5f;
-      color: white;
-    }
-
-    .controls {
+    .week-nav {
       display: flex;
-      gap: 0.5rem;
       justify-content: center;
-      margin-top: 0.5rem;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .week-nav button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      background: #333;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .employe {
+      border-radius: 10px;
+      background: #fff;
+      padding: 1rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .nom {
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+
+    .jours {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-between;
+    }
+
+    .jour {
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 12px;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      width: 180px;
+    }
+
+    .jour h3 {
+      margin-top: 0;
+      font-size: 1.1rem;
     }
 
     select {
+      width: 100%;
       padding: 0.4rem;
-      border-radius: 5px;
+      border-radius: 6px;
       border: 1px solid #ccc;
+      margin-bottom: 0.5rem;
     }
 
-    .valide { background: #d4edda; color: #155724; }
-    .refuse { background: #f8d7da; color: #721c24; }
-    .attente { background: #fff3cd; color: #856404; }
+    .statut {
+      text-align: center;
+      font-weight: bold;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+    }
 
-    .btn-valider, .btn-refuser {
-      padding: 0.3rem 0.7rem;
-      font-size: 0.9rem;
+    .statut.en-attente {
+      background: #ffe58a;
+      color: #664d03;
+    }
+    .statut.valide {
+      background: #d4edda;
+      color: #155724;
+    }
+    .statut.refuse {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+
+    .actions button {
+      padding: 0.3rem 0.6rem;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: bold;
       cursor: pointer;
     }
-    .btn-valider { background: #28a745; color: white; }
-    .btn-refuser { background: #dc3545; color: white; }
+
+    .actions .valider {
+      background: #28a745;
+      color: white;
+    }
+
+    .actions .refuser {
+      background: #dc3545;
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .jours {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .jour {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Vue Admin - Disponibilités</h1>
-    <table>
-      <thead>
-        <tr>
-          <th>Prénom</th>
-          <th>Lundi</th>
-          <th>Mardi</th>
-          <th>Mercredi</th>
-          <th>Jeudi</th>
-          <th>Vendredi</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody id="adminTable">
-        <!-- Remplir dynamiquement -->
-      </tbody>
-    </table>
+    <h1>Gestion des horaires - Tam</h1>
+
+    <div class="week-nav">
+      <button onclick="changerSemaine(-1)">&larr;</button>
+      <div id="weekLabel">Semaine du ...</div>
+      <button onclick="changerSemaine(1)">&rarr;</button>
+    </div>
+
+    <div id="employesContainer"></div>
   </div>
+
   <script>
-    const utilisateurs = [
-      {
-        prenom: "Oumaima",
-        semaine: {
-          Lundi: { debut: "10:00", fin: "13:30", statut: "en attente" },
-          Mardi: { debut: "--", fin: "--", statut: "en attente" },
-          Mercredi: { debut: "10:15", fin: "12:15", statut: "valide" },
-          Jeudi: { debut: "--", fin: "--", statut: "en attente" },
-          Vendredi: { debut: "10:00", fin: "13:00", statut: "refuse" },
-        }
-      }
-    ];
+    const nomsEmployes = ["Sofia", "Lina", "Noa"];
+    const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
+    const heures = ["--", ...Array.from({length: 15}, (_, i) => {
+      const h = 10 + Math.floor(i * 0.25);
+      const m = (i % 4) * 15;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    })];
 
-    function genererTable() {
-      const tbody = document.getElementById("adminTable");
-      tbody.innerHTML = "";
+    let semaineOffset = 0;
 
-      utilisateurs.forEach(user => {
-        const row = document.createElement("tr");
+    function changerSemaine(offset) {
+      semaineOffset += offset;
+      const lundi = new Date();
+      lundi.setDate(lundi.getDate() - lundi.getDay() + 1 + 7 * semaineOffset);
+      const vendredi = new Date(lundi);
+      vendredi.setDate(lundi.getDate() + 4);
+      const options = { day: 'numeric', month: 'long' };
+      document.getElementById("weekLabel").textContent = `Semaine du ${lundi.toLocaleDateString('fr-FR', options)} au ${vendredi.toLocaleDateString('fr-FR', options)}`;
+    }
 
-        const tdNom = document.createElement("td");
-        tdNom.textContent = user.prenom;
-        row.appendChild(tdNom);
+    function creerInterface() {
+      const container = document.getElementById("employesContainer");
+      container.innerHTML = "";
+      nomsEmployes.forEach(nom => {
+        const bloc = document.createElement("div");
+        bloc.className = "employe";
 
-        let totalMin = 0;
+        const titre = document.createElement("div");
+        titre.className = "nom";
+        titre.textContent = nom;
+        bloc.appendChild(titre);
 
-        ["Lundi","Mardi","Mercredi","Jeudi","Vendredi"].forEach(jour => {
-          const cell = document.createElement("td");
-          const data = user.semaine[jour];
+        const joursContainer = document.createElement("div");
+        joursContainer.className = "jours";
 
-          if (data.debut !== "--" && data.fin !== "--") {
-            const [h1, m1] = data.debut.split(":").map(Number);
-            const [h2, m2] = data.fin.split(":").map(Number);
-            const diff = h2 * 60 + m2 - (h1 * 60 + m1);
-            if (diff > 0 && data.statut === "valide") totalMin += diff;
-          }
+        jours.forEach(jour => {
+          const card = document.createElement("div");
+          card.className = "jour";
 
-          const selectDebut = `<select>${genererOptions(data.debut)}</select>`;
-          const selectFin = `<select>${genererOptions(data.fin)}</select>`;
+          const titre = document.createElement("h3");
+          titre.textContent = jour;
 
-          cell.innerHTML = `
-            ${selectDebut}<br>${selectFin}
-            <div class="statut ${data.statut.replace(" ", "-")}">${data.statut}</div>
-            <div class="controls">
-              <button class="btn-valider">Valider</button>
-              <button class="btn-refuser">Refuser</button>
-            </div>
-          `;
+          const debut = document.createElement("select");
+          const fin = document.createElement("select");
+          heures.forEach(h => {
+            debut.innerHTML += `<option value="${h}">${h}</option>`;
+            fin.innerHTML += `<option value="${h}">${h}</option>`;
+          });
 
-          row.appendChild(cell);
+          const statut = document.createElement("div");
+          statut.className = "statut en-attente";
+          statut.textContent = "En attente";
+
+          const actions = document.createElement("div");
+          actions.className = "actions";
+          const validerBtn = document.createElement("button");
+          validerBtn.textContent = "Valider";
+          validerBtn.className = "valider";
+          validerBtn.onclick = () => {
+            statut.className = "statut valide";
+            statut.textContent = "Validé";
+          };
+          const refuserBtn = document.createElement("button");
+          refuserBtn.textContent = "Refuser";
+          refuserBtn.className = "refuser";
+          refuserBtn.onclick = () => {
+            statut.className = "statut refuse";
+            statut.textContent = "Refusé";
+          };
+          actions.appendChild(validerBtn);
+          actions.appendChild(refuserBtn);
+
+          card.appendChild(titre);
+          card.appendChild(debut);
+          card.appendChild(fin);
+          card.appendChild(statut);
+          card.appendChild(actions);
+
+          joursContainer.appendChild(card);
         });
 
-        const tdTotal = document.createElement("td");
-        tdTotal.innerHTML = `${Math.floor(totalMin/60)}h${String(totalMin%60).padStart(2,'0')}min`;
-        row.appendChild(tdTotal);
-
-        tbody.appendChild(row);
+        bloc.appendChild(joursContainer);
+        container.appendChild(bloc);
       });
     }
 
-    function genererOptions(selected) {
-      const heures = ["--"];
-      for (let h = 10; h <= 13; h++) {
-        for (let m = 0; m < 60; m += 15) {
-          const val = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-          heures.push(val);
-        }
-      }
-      return heures.map(h => `<option ${h === selected ? "selected" : ""}>${h}</option>`).join("");
-    }
-
-    window.onload = genererTable;
+    window.onload = () => {
+      changerSemaine(0);
+      creerInterface();
+    };
   </script>
 </body>
 </html>
