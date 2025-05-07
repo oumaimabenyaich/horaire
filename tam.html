@@ -146,14 +146,16 @@
       color: white;
     }
 
+    /* Mobile: Grid layout for a more compact view */
     @media (max-width: 768px) {
       .jours {
-        flex-direction: column;
-        align-items: center;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.75rem;
       }
 
       .jour {
-        width: 100%;
+        width: auto;
       }
     }
   </style>
@@ -184,10 +186,11 @@
 
     function changerSemaine(offset) {
       semaineOffset += offset;
-      const lundi = new Date();
-      lundi.setDate(lundi.getDate() - lundi.getDay() + 1 + 7 * semaineOffset);
-      const vendredi = new Date(lundi);
-      vendredi.setDate(lundi.getDate() + 4);
+      const now = new Date();
+      const day = now.getDay();
+      const diffToMonday = (day === 0 ? -6 : 1 - day) + semaineOffset * 7;
+      const lundi = new Date(now.getFullYear(), now.getMonth(), now.getDate() + diffToMonday);
+      const vendredi = new Date(lundi.getFullYear(), lundi.getMonth(), lundi.getDate() + 4);
       const options = { day: 'numeric', month: 'long' };
       document.getElementById("weekLabel").textContent = `Semaine du ${lundi.toLocaleDateString('fr-FR', options)} au ${vendredi.toLocaleDateString('fr-FR', options)}`;
     }
@@ -211,14 +214,14 @@
           const card = document.createElement("div");
           card.className = "jour";
 
-          const titre = document.createElement("h3");
-          titre.textContent = jour;
+          const titreJour = document.createElement("h3");
+          titreJour.textContent = jour;
 
           const debut = document.createElement("select");
           const fin = document.createElement("select");
           heures.forEach(h => {
-            debut.innerHTML += `<option value="${h}">${h}</option>`;
-            fin.innerHTML += `<option value="${h}">${h}</option>`;
+            debut.innerHTML += `<option value=\"${h}\">${h}</option>`;
+            fin.innerHTML += `<option value=\"${h}\">${h}</option>`;
           });
 
           const statut = document.createElement("div");
@@ -244,7 +247,7 @@
           actions.appendChild(validerBtn);
           actions.appendChild(refuserBtn);
 
-          card.appendChild(titre);
+          card.appendChild(titreJour);
           card.appendChild(debut);
           card.appendChild(fin);
           card.appendChild(statut);
