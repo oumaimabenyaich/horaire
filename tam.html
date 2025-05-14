@@ -65,6 +65,7 @@
       padding: 1rem;
       margin-bottom: 2rem;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      overflow-x: auto;
     }
 
     .nom {
@@ -75,9 +76,9 @@
 
     .jours {
       display: flex;
-      flex-wrap: wrap;
       gap: 1rem;
-      justify-content: space-around;
+      justify-content: flex-start;
+      min-width: 700px;
     }
 
     .jour {
@@ -150,48 +151,24 @@
     }
 
     @media (max-width: 768px) {
-    .container {
-      padding: 1rem;
+      .jour {
+        width: 120px;
+        font-size: 0.75rem;
+        padding: 0.5rem;
+      }
+
+      .jours {
+        min-width: 600px;
+      }
+
+      select {
+        font-size: 0.75rem;
+      }
+
+      .statut, .actions button {
+        font-size: 0.7rem;
+      }
     }
-
-    .employe {
-      padding: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .jours {
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.6rem;
-    }
-
-    .jour {
-      width: 130px;
-      font-size: 0.75rem;
-      padding: 0.7rem;
-    }
-
-    select {
-      font-size: 0.75rem;
-    }
-
-    .actions button {
-      padding: 0.25rem 0.5rem;
-      font-size: 0.75rem;
-    }
-
-    .statut {
-      font-size: 0.75rem;
-    }
-
-    .nom {
-      font-size: 1rem;
-      text-align: center;
-      margin-bottom: 0.6rem;
-    }
-  }
-
-
   </style>
 </head>
 <body>
