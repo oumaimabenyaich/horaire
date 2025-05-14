@@ -1,21 +1,18 @@
-<!-- tam.html -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Tam - AsieExpress</title>
+  <title>Vue Admin - Edition des horaires</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    html, body {
-      margin: 0;
+    body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #ffb347, #ffcc33, #ff7f50, #ff6f61);
       background-size: 400% 400%;
       animation: gradientMove 12s ease infinite;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
+      padding: 2rem;
+      margin: 0;
     }
 
     @keyframes gradientMove {
@@ -24,280 +21,110 @@
       100% { background-position: 0% 50%; }
     }
 
-    .container {
-      max-width: 1300px;
-      width: 95%;
-      background: rgba(255, 255, 255, 0.88);
-      padding: 2rem;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      margin: 2rem auto;
-    }
-
-    h1 {
+    h1, #info-semaine {
       text-align: center;
       color: #222;
-      margin-bottom: 2rem;
     }
 
-    .week-nav {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 2rem;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(255, 255, 255, 0.88);
+      margin-top: 1rem;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
-    .week-nav button {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 8px;
-      background: #333;
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .employe {
-      border-radius: 10px;
-      background: #fff;
-      padding: 1rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    .nom {
-      font-weight: bold;
-      margin-bottom: 1rem;
-      font-size: 1.2rem;
-    }
-
-    .jours {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      justify-content: space-around;
-    }
-
-    .jour {
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 12px;
+    th, td {
       padding: 1rem;
       border: 1px solid #ddd;
-      width: 160px;
-      flex-shrink: 0;
+      text-align: center;
     }
 
-    .jour h3 {
-      margin-top: 0;
-      font-size: 1rem;
+    th {
+      background: #ff8c00;
+      color: white;
     }
 
     select {
-      width: 100%;
+      margin: 0.3rem 0.2rem;
       padding: 0.4rem;
       border-radius: 6px;
       border: 1px solid #ccc;
-      margin-bottom: 0.5rem;
       font-size: 0.9rem;
     }
 
     .statut {
-      text-align: center;
-      font-weight: bold;
+      display: inline-block;
+      padding: 0.3rem 0.5rem;
       border-radius: 6px;
       font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    .validé { background-color: #d4edda; color: #155724; }
+    .en-attente { background-color: #ffe58a; color: #664d03; }
+    .refusé { background-color: #f8d7da; color: #721c24; }
+
+    .action-btn {
+      font-size: 0.75rem;
+      margin: 0.2rem;
+      padding: 0.3rem 0.5rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .valider-btn { background-color: #28a745; color: white; }
+    .refuser-btn { background-color: #dc3545; color: white; }
+
+    .total { font-weight: bold; }
+
+    .horaire-group {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.25rem;
       margin-bottom: 0.5rem;
     }
 
-    .statut.en-attente {
-      background: #ffe58a;
-      color: #664d03;
-    }
-    .statut.valide {
-      background: #d4edda;
-      color: #155724;
-    }
-    .statut.refuse {
-      background: #f8d7da;
-      color: #721c24;
-    }
-
-    .actions {
-      display: flex;
-      gap: 0.5rem;
-      justify-content: center;
-    }
-
-    .actions button {
-      padding: 0.3rem 0.6rem;
-      border: none;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .actions .valider {
-      background: #28a745;
-      color: white;
-    }
-
-    .actions .refuser {
-      background: #dc3545;
-      color: white;
-    }
-
     @media (max-width: 768px) {
-    .container {
-      padding: 1rem;
+      table, thead, tbody, th, td, tr {
+        font-size: 0.75rem;
+        padding: 0.3rem;
+      }
+
+      .horaire-group {
+        flex-direction: column;
+        gap: 0.1rem;
+      }
+
+      select {
+        font-size: 0.75rem;
+        padding: 0.25rem;
+      }
     }
-
-    .employe {
-      padding: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .jours {
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.6rem;
-    }
-
-    .jour {
-      width: 130px;
-      font-size: 0.75rem;
-      padding: 0.7rem;
-    }
-
-    select {
-      font-size: 0.75rem;
-    }
-
-    .actions button {
-      padding: 0.25rem 0.5rem;
-      font-size: 0.75rem;
-    }
-
-    .statut {
-      font-size: 0.75rem;
-    }
-
-    .nom {
-      font-size: 1rem;
-      text-align: center;
-      margin-bottom: 0.6rem;
-    }
-  }
-
-
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Gestion des horaires - Tam</h1>
-
-    <div class="week-nav">
-      <button onclick="changerSemaine(-1)">&larr;</button>
-      <div id="weekLabel">Semaine du ...</div>
-      <button onclick="changerSemaine(1)">&rarr;</button>
-    </div>
-
-    <div id="employesContainer"></div>
-  </div>
-
-  <script>
-    const nomsEmployes = ["Sofia", "Lina", "Noa"];
-    const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
-    const heures = ["--", ...Array.from({length: 15}, (_, i) => {
-      const h = 10 + Math.floor(i * 0.25);
-      const m = (i % 4) * 15;
-      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-    })];
-
-    let semaineOffset = 0;
-
-    function changerSemaine(offset) {
-      semaineOffset += offset;
-      const lundi = new Date();
-      lundi.setDate(lundi.getDate() - lundi.getDay() + 1 + 7 * semaineOffset);
-      const vendredi = new Date(lundi);
-      vendredi.setDate(lundi.getDate() + 4);
-      const options = { day: 'numeric', month: 'long' };
-      document.getElementById("weekLabel").textContent = `Semaine du ${lundi.toLocaleDateString('fr-FR', options)} au ${vendredi.toLocaleDateString('fr-FR', options)}`;
-    }
-
-    function creerInterface() {
-      const container = document.getElementById("employesContainer");
-      container.innerHTML = "";
-      nomsEmployes.forEach(nom => {
-        const bloc = document.createElement("div");
-        bloc.className = "employe";
-
-        const titre = document.createElement("div");
-        titre.className = "nom";
-        titre.textContent = nom;
-        bloc.appendChild(titre);
-
-        const joursContainer = document.createElement("div");
-        joursContainer.className = "jours";
-
-        jours.forEach(jour => {
-          const card = document.createElement("div");
-          card.className = "jour";
-
-          const titre = document.createElement("h3");
-          titre.textContent = jour;
-
-          const debut = document.createElement("select");
-          const fin = document.createElement("select");
-          heures.forEach(h => {
-            debut.innerHTML += `<option value="${h}">${h}</option>`;
-            fin.innerHTML += `<option value="${h}">${h}</option>`;
-          });
-
-          const statut = document.createElement("div");
-          statut.className = "statut en-attente";
-          statut.textContent = "En attente";
-
-          const actions = document.createElement("div");
-          actions.className = "actions";
-          const validerBtn = document.createElement("button");
-          validerBtn.textContent = "Valider";
-          validerBtn.className = "valider";
-          validerBtn.onclick = () => {
-            statut.className = "statut valide";
-            statut.textContent = "Validé";
-          };
-          const refuserBtn = document.createElement("button");
-          refuserBtn.textContent = "Refuser";
-          refuserBtn.className = "refuser";
-          refuserBtn.onclick = () => {
-            statut.className = "statut refuse";
-            statut.textContent = "Refusé";
-          };
-          actions.appendChild(validerBtn);
-          actions.appendChild(refuserBtn);
-
-          card.appendChild(titre);
-          card.appendChild(debut);
-          card.appendChild(fin);
-          card.appendChild(statut);
-          card.appendChild(actions);
-
-          joursContainer.appendChild(card);
-        });
-
-        bloc.appendChild(joursContainer);
-        container.appendChild(bloc);
-      });
-    }
-
-    window.onload = () => {
-      changerSemaine(0);
-      creerInterface();
-    };
-  </script>
+  <h1>Tableau Admin - Edition des Horaires</h1>
+  <p id="info-semaine">Chargement...</p>
+  <table id="tableau">
+    <thead>
+      <tr>
+        <th>Prénom</th>
+        <th>Lundi</th>
+        <th>Mardi</th>
+        <th>Mercredi</th>
+        <th>Jeudi</th>
+        <th>Vendredi</th>
+        <th>Total validé</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <script type="module" src="adminScript.js"></script>
 </body>
 </html>
