@@ -150,41 +150,47 @@
     }
 
     @media (max-width: 768px) {
+    .container {
+      padding: 1rem;
+    }
+
+    .employe {
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
     .jours {
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      justify-content: flex-start;
-      padding-bottom: 1rem;
-      gap: 0.8rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem;
     }
 
     .jour {
       width: 130px;
-      flex: 0 0 auto;
       font-size: 0.75rem;
-      padding: 0.6rem;
+      padding: 0.7rem;
     }
 
     select {
       font-size: 0.75rem;
-      padding: 0.3rem;
-    }
-
-    .statut {
-      font-size: 0.75rem;
-      padding: 0.2rem 0.3rem;
     }
 
     .actions button {
-      padding: 0.2rem 0.5rem;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    .statut {
       font-size: 0.75rem;
     }
 
     .nom {
       font-size: 1rem;
-      margin-bottom: 0.8rem;
+      text-align: center;
+      margin-bottom: 0.6rem;
     }
   }
+
 
   </style>
 </head>
